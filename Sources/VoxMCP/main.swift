@@ -1,7 +1,8 @@
 import Foundation
 
-let server = MCPServer()
+if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *) {
+    let server = MCPServer()
+    Task { await server.run() }
 
-Task { await server.run() }
-
-RunLoop.main.run()
+    RunLoop.main.run()
+}

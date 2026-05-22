@@ -10,19 +10,23 @@
 		10DE7C84C412FC93F6C6713A /* VoiceCore in Frameworks */ = {isa = PBXBuildFile; productRef = F8A663AC1D5613852610B32F /* VoiceCore */; };
 		328407C9593DCD7206BF59DC /* ElevenLabsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B42FAC7B3B654BFE839DFA /* ElevenLabsAPI.swift */; };
 		352BA0F61B0605D9A2A0E5A4 /* StatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E523DC32373A3817A38073E3 /* StatusManager.swift */; };
+		390E600D336C9AF534BC307D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 072790359450F49211D833A9 /* Assets.xcassets */; };
 		60585272DB4B8B63DA05BDA9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291C80FDEBF043D432FC9246 /* SettingsView.swift */; };
 		729F163EDB01DAD7768F2F25 /* MenuBarIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76274449A4774E483C29EDE2 /* MenuBarIcon.swift */; };
 		786D2867B235C94E02E9DD37 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22F088E68A45894EC2169F3 /* MenuBarView.swift */; };
 		85897DF50D9933FC3FD586BF /* VoxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC197613F28E8F02CE6DB /* VoxApp.swift */; };
 		B4E03C4F22EF40CEDEF48D7C /* VoxConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEDC41B2DC6F7BEC06DA1DC /* VoxConfig.swift */; };
+		BF8C2A9572D916D2884A4064 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 748CD5AFD485226C4FD7FAFE /* AppIcon.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		072790359450F49211D833A9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1169C412C81D36B35ACF70E4 /* vox */ = {isa = PBXFileReference; lastKnownFileType = folder; name = vox; path = ..; sourceTree = SOURCE_ROOT; };
 		17B42FAC7B3B654BFE839DFA /* ElevenLabsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevenLabsAPI.swift; sourceTree = "<group>"; };
 		262E3CB06028687AE83D012E /* VoxApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoxApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		291C80FDEBF043D432FC9246 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		3FBB245913B92A9B1FAF3DF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		748CD5AFD485226C4FD7FAFE /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		76274449A4774E483C29EDE2 /* MenuBarIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIcon.swift; sourceTree = "<group>"; };
 		98288842D9CDA65BFC4CB321 /* VoxApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VoxApp.entitlements; sourceTree = "<group>"; };
 		B22F088E68A45894EC2169F3 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
@@ -71,6 +75,8 @@
 		DBD7CA5FC9695CF5054B8147 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				748CD5AFD485226C4FD7FAFE /* AppIcon.icns */,
+				072790359450F49211D833A9 /* Assets.xcassets */,
 				17B42FAC7B3B654BFE839DFA /* ElevenLabsAPI.swift */,
 				3FBB245913B92A9B1FAF3DF0 /* Info.plist */,
 				76274449A4774E483C29EDE2 /* MenuBarIcon.swift */,
@@ -92,6 +98,7 @@
 			buildConfigurationList = 2CD073969EE98867A55148B1 /* Build configuration list for PBXNativeTarget "VoxApp" */;
 			buildPhases = (
 				54F2E36C90D48C5C0485D187 /* Sources */,
+				9F09390685E6255DD82F9269 /* Resources */,
 				6FE8D02C18E39250CA6917EE /* Frameworks */,
 			);
 			buildRules = (
@@ -141,6 +148,18 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9F09390685E6255DD82F9269 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF8C2A9572D916D2884A4064 /* AppIcon.icns in Resources */,
+				390E600D336C9AF534BC307D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		54F2E36C90D48C5C0485D187 /* Sources */ = {

@@ -2,8 +2,6 @@ import AVFoundation
 import Foundation
 
 public class SpeechSynthesizer: NSObject {
-    private let elevenLabsKey: String
-    private let voiceId: String
     private let model = "eleven_multilingual_v2"
     private let voiceSettings: [String: Any] = [
         "stability": 0.35,
@@ -18,15 +16,13 @@ public class SpeechSynthesizer: NSObject {
     private var audioPlayerContinuation: CheckedContinuation<Void, Never>?
 
     public override init() {
-        let (key, voice) = SpeechSynthesizer.loadConfig()
-        self.elevenLabsKey = key
-        self.voiceId = voice
         super.init()
         fallback.delegate = self
     }
 
-    // 抓音頻 data（可並行呼叫）
+    // 抓音頻 data（可並行呼叫）— reads config fresh each call for on-the-fly voice switching
     public func fetchAudio(_ text: String) async throws -> Data {
+        let (elevenLabsKey, voiceId) = SpeechSynthesizer.loadConfig()
         guard !elevenLabsKey.isEmpty else { throw SynthError.noKey }
         var req = URLRequest(url: URL(string: "https://api.elevenlabs.io/v1/text-to-speech/\(voiceId)")!)
         req.httpMethod = "POST"
