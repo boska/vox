@@ -40,7 +40,31 @@ Then just say: `listen` — and Claude hears you.
 - Microphone + Speech Recognition permission for your terminal app
 - Optional: `ELEVENLABS_API_KEY` in `~/.claude/.env` for high-quality multilingual TTS
 
-## Build & Install
+## Install
+
+### Option 1: Pre-built Binary (Recommended)
+
+Download the latest code-signed binary:
+
+```bash
+curl -L https://github.com/boska/vox/releases/download/v1.1.0/vox-1.1.0-darwin-arm64 -o ~/vox && chmod +x ~/vox
+```
+
+Add to `~/.claude.json`:
+
+```json
+{
+  "mcpServers": {
+    "vox": {
+      "command": "/Users/$(whoami)/vox"
+    }
+  }
+}
+```
+
+Restart Claude Code. Done.
+
+### Option 2: Build from Source
 
 ```bash
 git clone https://github.com/boska/vox
@@ -60,7 +84,7 @@ Add to `~/.claude.json`:
 }
 ```
 
-Restart Claude Code. Done.
+Restart Claude Code.
 
 ## Voice
 
