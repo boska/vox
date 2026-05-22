@@ -42,15 +42,39 @@ Then just say: `listen` — and Claude hears you.
 
 ## Install
 
-### Option 1: Pre-built Binary (Recommended)
+### Option 1: Prompt for Claude Code
 
-Download the latest code-signed binary:
+Copy and paste this into [Claude Code](https://claude.ai/code):
+
+```
+Install vox (native macOS voice input/output MCP server):
+
+1. Download the code-signed binary to ~/vox:
+   curl -L https://github.com/boska/vox/releases/download/v1.1.0/vox-1.1.0-darwin-arm64 -o ~/vox && chmod +x ~/vox
+
+2. Add to ~/.claude.json in the mcpServers section:
+   {
+     "mcpServers": {
+       "vox": {
+         "command": "/Users/$(whoami)/vox"
+       }
+     }
+   }
+
+3. Restart Claude Code
+
+4. Test it by saying: listen
+```
+
+Claude will handle the download, configuration, and restart.
+
+### Option 2: Manual Install (Pre-built Binary)
 
 ```bash
 curl -L https://github.com/boska/vox/releases/download/v1.1.0/vox-1.1.0-darwin-arm64 -o ~/vox && chmod +x ~/vox
 ```
 
-Add to `~/.claude.json`:
+Then add to `~/.claude.json`:
 
 ```json
 {
@@ -62,9 +86,9 @@ Add to `~/.claude.json`:
 }
 ```
 
-Restart Claude Code. Done.
+Restart Claude Code.
 
-### Option 2: Build from Source
+### Option 3: Build from Source
 
 ```bash
 git clone https://github.com/boska/vox
