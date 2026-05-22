@@ -1,5 +1,7 @@
 import Speech
 import AVFoundation
+import AppKit
+import AudioToolbox
 
 public enum SpeechRecognizerError: Error, LocalizedError {
     case microphonePermissionDenied
@@ -53,6 +55,10 @@ public class SpeechRecognizer {
         guard AVCaptureDevice.authorizationStatus(for: .audio) == .authorized else {
             throw SpeechRecognizerError.microphonePermissionDenied
         }
+
+        // Play start cue BEFORE the mic opens so the beep can't leak into the recording.
+        Self.playCue("/System/Library/Sounds/Tink.aiff")
+
         transcript = ""
         hasSpeech = false
         lastSpeechDate = Date.distantPast
@@ -64,6 +70,10 @@ public class SpeechRecognizer {
         task = recognizer.recognitionTask(with: req) { [weak self] result, error in
             guard let self else { return }
             if let result { self.transcript = result.bestTranscription.formattedString }
+            if let error {
+                fputs("[vox] Recognition error: \(error.localizedDescription)\n", stderr)
+                self.onSilenceDetected?()
+            }
         }
 
         // Install tap with nil format first (connects inputNode to the graph),
@@ -93,7 +103,23 @@ public class SpeechRecognizer {
         request = nil
         task = nil
 
+        // End cue — played AFTER the mic closes so it can't leak in either.
+        Self.playCue("/System/Library/Sounds/Pop.aiff")
+
         return transcript
+    }
+
+    private static func playCue(_ path: String) {
+        guard FileManager.default.fileExists(atPath: path) else { return }
+        let url = URL(fileURLWithPath: path)
+        var soundID: SystemSoundID = 0
+        AudioServicesCreateSystemSoundID(url as CFURL, &soundID)
+        let sem = DispatchSemaphore(value: 0)
+        AudioServicesPlaySystemSoundWithCompletion(soundID) {
+            AudioServicesDisposeSystemSoundID(soundID)
+            sem.signal()
+        }
+        _ = sem.wait(timeout: .now() + 1.0)
     }
 
     private func checkVAD(buffer: AVAudioPCMBuffer) {

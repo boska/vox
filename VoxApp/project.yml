@@ -1,0 +1,30 @@
+name: VoxApp
+options:
+  bundleIdPrefix: com.boska
+  deploymentTarget:
+    macOS: "14.0"
+
+packages:
+  VoiceCore:
+    path: ..
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  VoxApp:
+    type: application
+    platform: macOS
+    sources:
+      - Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.boska.vox
+        INFOPLIST_FILE: Sources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Sources/VoxApp.entitlements
+    dependencies:
+      - package: VoiceCore
+        product: VoiceCore

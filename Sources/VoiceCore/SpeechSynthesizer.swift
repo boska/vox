@@ -3,7 +3,7 @@ import Foundation
 
 public class SpeechSynthesizer: NSObject {
     private let elevenLabsKey: String
-    private let voiceId = "jsCqWAovK2LkecY7zXl4" // Hana
+    private let voiceId: String
     private let model = "eleven_multilingual_v2"
     private let voiceSettings: [String: Any] = [
         "stability": 0.35,
@@ -14,15 +14,20 @@ public class SpeechSynthesizer: NSObject {
 
     private let fallback = AVSpeechSynthesizer()
     private var fallbackContinuation: CheckedContinuation<Void, Never>?
+    private var audioPlayer: AVAudioPlayer?
+    private var audioPlayerContinuation: CheckedContinuation<Void, Never>?
 
     public override init() {
-        self.elevenLabsKey = SpeechSynthesizer.loadKey()
+        let (key, voice) = SpeechSynthesizer.loadConfig()
+        self.elevenLabsKey = key
+        self.voiceId = voice
         super.init()
         fallback.delegate = self
     }
 
     // 抓音頻 data（可並行呼叫）
     public func fetchAudio(_ text: String) async throws -> Data {
+        guard !elevenLabsKey.isEmpty else { throw SynthError.noKey }
         var req = URLRequest(url: URL(string: "https://api.elevenlabs.io/v1/text-to-speech/\(voiceId)")!)
         req.httpMethod = "POST"
         req.setValue(elevenLabsKey, forHTTPHeaderField: "xi-api-key")
@@ -40,23 +45,26 @@ public class SpeechSynthesizer: NSObject {
 
     // 播放已有的音頻 data
     public func playData(_ data: Data) async {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .userInteractive).async {
-                guard let player = try? AVAudioPlayer(data: data) else {
-                    continuation.resume(); return
-                }
+        await withCheckedContinuation { [weak self] continuation in
+            guard let self else { continuation.resume(); return }
+            do {
+                let player = try AVAudioPlayer(data: data)
+                self.audioPlayer = player
+                self.audioPlayerContinuation = continuation
+                player.delegate = self
                 player.prepareToPlay()
                 player.play()
-                while player.isPlaying { Thread.sleep(forTimeInterval: 0.05) }
+            } catch {
                 continuation.resume()
             }
         }
     }
 
     // 簡單一次性 speak（fallback 用）
-    public func speakFallback(_ text: String) async {
+    public func speakFallback(_ text: String, locale: String? = nil) async {
         let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "zh-TW")
+        let lang = locale ?? "zh-TW"
+        utterance.voice = AVSpeechSynthesisVoice(language: lang)
         utterance.rate = 0.48
         await withCheckedContinuation { [weak self] cont in
             self?.fallbackContinuation = cont
@@ -64,23 +72,45 @@ public class SpeechSynthesizer: NSObject {
         }
     }
 
-    private static func loadKey() -> String {
-        if let key = ProcessInfo.processInfo.environment["ELEVENLABS_API_KEY"], !key.isEmpty { return key }
-        let path = NSHomeDirectory() + "/.claude/.env"
-        guard let content = try? String(contentsOfFile: path, encoding: .utf8) else { return "" }
-        for line in content.components(separatedBy: "\n") {
-            if line.hasPrefix("ELEVENLABS_API_KEY=") {
-                return line.dropFirst("ELEVENLABS_API_KEY=".count)
-                    .trimmingCharacters(in: .init(charactersIn: "\"'\r "))
+    private static func loadConfig() -> (key: String, voiceId: String) {
+        let defaultVoice = "jsCqWAovK2LkecY7zXl4" // Hana
+
+        // 1. Config file written by VoxApp (~/.config/vox/config.json)
+        let configPath = NSHomeDirectory() + "/.config/vox/config.json"
+        if let data = try? Data(contentsOf: URL(fileURLWithPath: configPath)),
+           let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],
+           let key = json["elevenLabsKey"], !key.isEmpty {
+            return (key, json["voiceId"] ?? defaultVoice)
+        }
+
+        // 2. Environment variable fallback
+        if let key = ProcessInfo.processInfo.environment["ELEVENLABS_API_KEY"], !key.isEmpty {
+            return (key, defaultVoice)
+        }
+
+        // 3. ~/.claude/.env fallback
+        let envPath = NSHomeDirectory() + "/.claude/.env"
+        if let content = try? String(contentsOfFile: envPath, encoding: .utf8) {
+            for line in content.components(separatedBy: "\n") {
+                if line.hasPrefix("ELEVENLABS_API_KEY=") {
+                    let key = line.dropFirst("ELEVENLABS_API_KEY=".count)
+                        .trimmingCharacters(in: .init(charactersIn: "\"'\r "))
+                    return (key, defaultVoice)
+                }
             }
         }
-        return ""
+
+        return ("", defaultVoice)
     }
 
     enum SynthError: Error, LocalizedError {
+        case noKey
         case apiError(String)
         var errorDescription: String? {
-            if case .apiError(let m) = self { return m }; return nil
+            switch self {
+            case .noKey: return "ElevenLabs API key not configured"
+            case .apiError(let m): return m
+            }
         }
     }
 }
@@ -88,5 +118,13 @@ public class SpeechSynthesizer: NSObject {
 extension SpeechSynthesizer: AVSpeechSynthesizerDelegate {
     public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         fallbackContinuation?.resume(); fallbackContinuation = nil
+    }
+}
+
+extension SpeechSynthesizer: AVAudioPlayerDelegate {
+    public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        audioPlayerContinuation?.resume()
+        audioPlayerContinuation = nil
+        audioPlayer = nil
     }
 }

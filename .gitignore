@@ -3,3 +3,7 @@
 *.d
 *.swp
 .DS_Store
+.swiftpm/
+xcuserdata/
+*.xcuserstate
+DerivedData/

@@ -5,7 +5,8 @@ let package = Package(
     name: "Vox",
     platforms: [.macOS(.v13)],
     products: [
-        .executable(name: "vox", targets: ["PragueGuideMCP"]),
+        .executable(name: "vox", targets: ["VoxMCP"]),
+        .library(name: "VoiceCore", targets: ["VoiceCore"]),
     ],
     targets: [
         .target(
@@ -17,9 +18,9 @@ let package = Package(
             ]
         ),
         .executableTarget(
-            name: "PragueGuideMCP",
+            name: "VoxMCP",
             dependencies: ["VoiceCore"],
-            path: "Sources/PragueGuideMCP",
+            path: "Sources/VoxMCP",
             linkerSettings: [
                 .linkedFramework("NaturalLanguage"),
             ]
