@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOX — Native Voice for Claude</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e27;
+            color: #e4e9f1;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #1e2850;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #a0aec0;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #6366f1;
+        }
+
+        .github-btn {
+            padding: 0.5rem 1.2rem;
+            background: #1e2850;
+            border: 1px solid #3949ab;
+            color: #6366f1;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .github-btn:hover {
+            background: #3949ab;
+            color: #fff;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 5rem 2rem;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #a0aec0;
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: #1e2850;
+            color: #6366f1;
+            border: 1px solid #3949ab;
+        }
+
+        .btn-secondary:hover {
+            background: #3949ab;
+            color: white;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #0f1535;
+            border: 1px solid #1e2850;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: #6366f1;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: #8892b0;
+            font-size: 0.95rem;
+        }
+
+        /* Terminal Demo Section */
+        .terminal-section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .terminal-section h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .terminal-container {
+            background: #0a0e27;
+            border: 1px solid #1e2850;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .terminal-header {
+            background: #0f1535;
+            padding: 1rem;
+            border-bottom: 1px solid #1e2850;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8892b0;
+        }
+
+        .terminal-body {
+            padding: 2rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #a8d8ea;
+            line-height: 1.8;
+            min-height: 400px;
+            overflow-x: auto;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .terminal-prompt {
+            color: #6366f1;
+            margin-right: 0.5rem;
+            font-weight: 600;
+        }
+
+        .terminal-input {
+            color: #e4e9f1;
+            cursor: text;
+        }
+
+        .terminal-output {
+            color: #8b9dc3;
+        }
+
+        .terminal-success {
+            color: #27c93f;
+        }
+
+        .terminal-error {
+            color: #ff5f56;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: #6366f1;
+            margin-left: 0.25rem;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .demo-btn {
+            padding: 0.6rem 1.2rem;
+            background: #1e2850;
+            border: 1px solid #3949ab;
+            color: #6366f1;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .demo-btn:hover {
+            background: #3949ab;
+            color: white;
+        }
+
+        .demo-btn.playing {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+
+        /* Installation Section */
+        .installation {
+            padding: 4rem 2rem;
+            background: #0f1535;
+            border-top: 1px solid #1e2850;
+            border-bottom: 1px solid #1e2850;
+        }
+
+        .installation .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .installation h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .install-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .install-option {
+            background: #0a0e27;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #1e2850;
+        }
+
+        .install-option h3 {
+            color: #6366f1;
+            margin-bottom: 1rem;
+        }
+
+        .install-option code {
+            background: #000;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            display: block;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid #1e2850;
+            color: #8892b0;
+        }
+
+        footer a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+            }
+
+            .terminal-body {
+                font-size: 0.8rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">◆ vox</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#demo">Demo</a></li>
+            <li><a href="#install">Install</a></li>
+        </ul>
+        <a href="https://github.com/boska/vox" class="github-btn" target="_blank">
+            <span>★</span> GitHub
+        </a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Give Claude <span class="gradient">a Voice</span></h1>
+        <p>Native macOS voice input/output for Claude Code.<br>No Node.js. No Python. No Electron. Just a single Swift binary.</p>
+        <div class="cta-buttons">
+            <a href="#install" class="btn-primary">Install Now</a>
+            <a href="https://github.com/boska/vox" class="btn-secondary" target="_blank">View on GitHub</a>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Single Binary</h3>
+            <p>~200KB native binary. Zero npm install. Zero venv. Download and run.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎤</div>
+            <h3>Offline Microphone</h3>
+            <p>Apple SFSpeechRecognizer. Works offline. 50+ languages. Zero latency.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔊</div>
+            <h3>Smart TTS</h3>
+            <p>ElevenLabs Hana voice (20+ languages) or automatic macOS fallback.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📡</div>
+            <h3>MCP Protocol</h3>
+            <p>Speaks JSON-RPC 2.0 over stdio. No ports. No sockets. No daemon.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌍</div>
+            <h3>Auto Language Detect</h3>
+            <p>Detects spoken language per utterance. Mix languages freely.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🛠️</div>
+            <h3>Built in Swift</h3>
+            <p>AVFoundation. AVAudioEngine. No bloat. Pure macOS native.</p>
+        </div>
+    </section>
+
+    <!-- Terminal Demo -->
+    <section class="terminal-section" id="demo">
+        <h2>Interactive Terminal Demo</h2>
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <div class="terminal-dot dot-red"></div>
+                <div class="terminal-dot dot-yellow"></div>
+                <div class="terminal-dot dot-green"></div>
+                <div class="terminal-title">vox — macOS voice MCP server</div>
+            </div>
+            <div class="terminal-body" id="terminal">
+                <div class="terminal-line">
+                    <span class="terminal-prompt">$</span>
+                    <span class="terminal-input">vox listen</span>
+                </div>
+            </div>
+        </div>
+        <div class="demo-controls">
+            <button class="demo-btn" id="demoBtn1">▶ Demo: Listen & Respond</button>
+            <button class="demo-btn" id="demoBtn2">▶ Demo: Voice Settings</button>
+            <button class="demo-btn" id="demoBtn3">▶ Clear</button>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section class="installation" id="install">
+        <div class="container">
+            <h2>Get Started</h2>
+            <div class="install-options">
+                <div class="install-option">
+                    <h3>Option 1: Quick Install</h3>
+                    <p>Download the pre-built binary for macOS 13+:</p>
+                    <code>curl -L https://github.com/boska/vox/releases/download/v1.1.0/vox-1.1.0-darwin-arm64 -o ~/vox && chmod +x ~/vox</code>
+                </div>
+                <div class="install-option">
+                    <h3>Option 2: Configure Claude Code</h3>
+                    <p>Add to <code>~/.claude.json</code>:</p>
+                    <code>{
+  "mcpServers": {
+    "vox": {
+      "command": "/Users/$(whoami)/vox"
+    }
+  }
+}</code>
+                </div>
+                <div class="install-option">
+                    <h3>Option 3: Build from Source</h3>
+                    <p>Clone and build with Swift:</p>
+                    <code>git clone https://github.com/boska/vox
+cd vox
+swift build -c release</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Built with Swift • macOS 13+ • <a href="https://github.com/boska/vox" target="_blank">Open Source</a></p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">© 2025 Yang Lee • <a href="https://github.com/boska" target="_blank">@boska</a></p>
+    </footer>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const demoBtn1 = document.getElementById('demoBtn1');
+        const demoBtn2 = document.getElementById('demoBtn2');
+        const demoBtn3 = document.getElementById('demoBtn3');
+
+        function clearTerminal() {
+            terminal.innerHTML = '<div class="terminal-line"><span class="terminal-prompt">$</span><span class="terminal-input">vox listen</span></div>';
+        }
+
+        function typeTerminal(lines, speed = 30) {
+            return new Promise((resolve) => {
+                let lineIndex = 0;
+
+                function typeLine() {
+                    if (lineIndex >= lines.length) {
+                        // Add cursor at the end
+                        const lastLine = terminal.lastChild;
+                        const cursor = document.createElement('span');
+                        cursor.className = 'cursor';
+                        lastLine.appendChild(cursor);
+                        resolve();
+                        return;
+                    }
+
+                    const line = lines[lineIndex];
+                    const div = document.createElement('div');
+                    div.className = 'terminal-line';
+
+                    if (line.type === 'input') {
+                        const prompt = document.createElement('span');
+                        prompt.className = 'terminal-prompt';
+                        prompt.textContent = '$ ';
+                        div.appendChild(prompt);
+
+                        const input = document.createElement('span');
+                        input.className = 'terminal-input';
+                        div.appendChild(input);
+
+                        terminal.appendChild(div);
+                        terminal.scrollTop = terminal.scrollHeight;
+
+                        let charIndex = 0;
+                        const typeChar = () => {
+                            if (charIndex < line.text.length) {
+                                input.textContent += line.text[charIndex];
+                                charIndex++;
+                                setTimeout(typeChar, speed);
+                            } else {
+                                setTimeout(typeLine, 500);
+                                lineIndex++;
+                            }
+                        };
+                        typeChar();
+                    } else if (line.type === 'output') {
+                        const span = document.createElement('span');
+                        span.className = `terminal-${line.class || 'output'}`;
+                        span.textContent = line.text;
+                        div.appendChild(span);
+                        terminal.appendChild(div);
+                        terminal.scrollTop = terminal.scrollHeight;
+                        setTimeout(() => {
+                            lineIndex++;
+                            typeLine();
+                        }, 200);
+                    } else if (line.type === 'wait') {
+                        setTimeout(() => {
+                            lineIndex++;
+                            typeLine();
+                        }, line.duration || 1000);
+                    }
+                }
+                typeLine();
+            });
+        }
+
+        demoBtn1.addEventListener('click', async () => {
+            clearTerminal();
+            demoBtn1.classList.add('playing');
+            demoBtn1.textContent = '⏸ Playing...';
+
+            await typeTerminal([
+                { type: 'input', text: 'vox listen' },
+                { type: 'wait', duration: 800 },
+                { type: 'output', text: '🎤 Listening... (speak now)', class: 'success' },
+                { type: 'wait', duration: 2000 },
+                { type: 'output', text: '✓ Transcript: "What\'s the capital of France?"' },
+                { type: 'output', text: '✓ Language: en' },
+                { type: 'wait', duration: 800 },
+                { type: 'input', text: 'vox speak' },
+                { type: 'wait', duration: 400 },
+                { type: 'output', text: '🔊 Speaking...', class: 'success' },
+                { type: 'wait', duration: 1500 },
+                { type: 'output', text: '"The capital of France is Paris. It\'s located in north-central France on the Seine River."' },
+                { type: 'output', text: '✓ Done' }
+            ], 40);
+
+            demoBtn1.classList.remove('playing');
+            demoBtn1.textContent = '▶ Demo: Listen & Respond';
+        });
+
+        demoBtn2.addEventListener('click', async () => {
+            clearTerminal();
+            demoBtn2.classList.add('playing');
+            demoBtn2.textContent = '⏸ Playing...';
+
+            await typeTerminal([
+                { type: 'input', text: 'vox-config' },
+                { type: 'wait', duration: 500 },
+                { type: 'output', text: '═══════════════════════════════' },
+                { type: 'output', text: '        VOX Configuration' },
+                { type: 'output', text: '═══════════════════════════════' },
+                { type: 'output', text: '' },
+                { type: 'output', text: '🎤 Microphone: Built-in Microphone' },
+                { type: 'output', text: '   ├─ Sample Rate: 16000 Hz' },
+                { type: 'output', text: '   └─ Channels: Mono' },
+                { type: 'output', text: '' },
+                { type: 'output', text: '🔊 Voice Output: ElevenLabs - Hana' },
+                { type: 'output', text: '   ├─ Language: en (auto-detect enabled)' },
+                { type: 'output', text: '   └─ Speed: 1.0x' },
+                { type: 'output', text: '' },
+                { type: 'output', text: '🌐 Fallback: macOS AVSpeechSynthesizer' },
+                { type: 'output', text: '   (when ElevenLabs unavailable)' },
+                { type: 'output', text: '' },
+                { type: 'output', text: '✓ Ready to use with Claude Code' }
+            ], 30);
+
+            demoBtn2.classList.remove('playing');
+            demoBtn2.textContent = '▶ Demo: Voice Settings';
+        });
+
+        demoBtn3.addEventListener('click', () => {
+            clearTerminal();
+            demoBtn1.classList.remove('playing');
+            demoBtn2.classList.remove('playing');
+            demoBtn1.textContent = '▶ Demo: Listen & Respond';
+            demoBtn2.textContent = '▶ Demo: Voice Settings';
+        });
+
+        // Scroll to section smooth
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
