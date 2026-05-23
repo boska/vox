@@ -76,8 +76,10 @@ class MCPServer {
         case "listen":
             let timeoutSeconds = (args["timeout_seconds"] as? NSNumber)?.doubleValue ?? 30.0
             writeStatus("listening")
+            writeStderr("🎤 Listening... (speak now)")
             defer { writeStatus("idle") }
 
+            let startTime = Date()
             let transcript: String = try await withTimeout(seconds: timeoutSeconds) { [weak self] in
                 guard let self else { throw VoiceError.emptyTranscript }
                 return try await withCheckedThrowingContinuation { continuation in
@@ -103,14 +105,26 @@ class MCPServer {
                 }
             }
             let lang = detectLanguage(transcript)
-            return "[\(lang)] \(transcript)"
+            let duration = Int(Date().timeIntervalSince(startTime) * 1000)
+
+            writeStderr("✓ Transcript: \"\(transcript)\"")
+            writeStderr("✓ Language: \(lang) | Duration: \(duration)ms")
+
+            return formatJSON([
+                "transcript": transcript,
+                "language": lang,
+                "duration_ms": duration
+            ])
 
         case "speak":
             guard let text = args["text"] as? String, !text.isEmpty else {
                 throw VoiceError.missingArg("text")
             }
             writeStatus("speaking")
+            writeStderr("🔊 Speaking... (\(text.prefix(50))\(text.count > 50 ? "..." : ""))")
             defer { writeStatus("idle") }
+
+            let startTime = Date()
             let sentences = splitSentences(text)
             let tasks: [Task<Data?, Never>] = sentences.map { s in
                 Task { [weak self] in try? await self?.tts.fetchAudio(s) }
@@ -124,11 +138,33 @@ class MCPServer {
             }
             // Fallback to Mac system TTS if ElevenLabs failed (no key or API error)
             if !anyPlayed { await tts.speakFallback(text) }
-            return "spoken"
+
+            let duration = Int(Date().timeIntervalSince(startTime) * 1000)
+            writeStderr("✓ Done | Duration: \(duration)ms")
+
+            return formatJSON([
+                "status": "spoken",
+                "duration_ms": duration,
+                "sentences": sentences.count,
+                "fallback_used": !anyPlayed
+            ])
 
         default:
             throw VoiceError.unknownTool(name)
         }
+    }
+
+    private func writeStderr(_ message: String) {
+        fputs("\(message)\n", stderr)
+        fflush(stderr)
+    }
+
+    private func formatJSON(_ dict: [String: Any]) -> String {
+        if let data = try? JSONSerialization.data(withJSONObject: dict),
+           let str = String(data: data, encoding: .utf8) {
+            return str
+        }
+        return "{}"
     }
 
     private func withTimeout<T>(seconds: Double, operation: @escaping () async throws -> T) async throws -> T {
